@@ -1,0 +1,31 @@
+{
+  "name": "gulp-composer",
+  "version": "0.0.1",
+  "description": "Install composer packages",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test; gulp composer:self:update"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/voceconnect/grunt-composer.git"
+  },
+  "keywords": [
+      "plugin",
+      "gulp",
+      "composer"
+  ],
+  "author": {
+    "name": "Tom Westcott",
+    "email": "tom.westcott@gmail.com"
+  },
+  "license": "MIT", 
+  "bugs": {
+    "url": "https://github.com/voceconnect/grunt-composer/issues"
+  },
+  "dependencies": {
+    "shelljs": "~0.2.6",
+    "gulp-util": "latest",
+    "through2": "latest"
+  }
+}
