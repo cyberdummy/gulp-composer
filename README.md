@@ -8,7 +8,7 @@
 ```js
 composer = require('gulp-composer');
 
-gulp.task('composer', function () {¬
+gulp.task('composer', function () {
 	composer({ cwd: './php-stuff', bin: 'composer' });
 });
 ```
