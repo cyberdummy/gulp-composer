@@ -14,7 +14,7 @@ module.exports = function (opts) {
 
 	opts.cwd = opts.cwd || process.cwd();
 	opts.bin = opts.bin || 'composer';
-	var dir = opts.directory;
+
 	gutil.log("Using cwd: ", opts.cwd);
 	var commandToRun = opts.bin+" -d="+opts.cwd+" install";
 	gutil.log("Running Composer Command: ", commandToRun);
