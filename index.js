@@ -27,15 +27,14 @@ module.exports = function (cmd, opts) {
 
 	var keys = Object.keys( opts );
 	for( var i = 0, length = keys.length; i < length; i++ ) {
-	    
-	    if(opts[ keys[ i ] ]){ //handle false case if passed in explicitly
-	    	var parameter = ((keys[ i ].length == 1)?'-':'--'); // use - for d, w, n, etc.
-	    	parameter += keys[ i ]; // add parameter name
-	    	if( typeof opts[ keys[ i ] ] != 'boolean'){
-	    		parameter += ' ' + opts[ keys[ i ] ];
-	    	}
-	    	command.push( parameter ); // add parameter to command array
-	    }	   
+		if(opts[ keys[ i ] ]) { //handle false case if passed in explicitly
+			var parameter = ((keys[ i ].length == 1)?'-':'--'); // use - for d, w, n, etc.
+			parameter += keys[ i ]; // add parameter name
+			if ( typeof opts[ keys[ i ] ] != 'boolean') {
+				parameter += ' ' + opts[ keys[ i ] ];
+			}
+			command.push( parameter ); // add parameter to command array
+		}
 	}
 
 	var commandToRun = command.join(' '); // combine composer command and parameters
