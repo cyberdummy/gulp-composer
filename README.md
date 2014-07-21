@@ -12,6 +12,14 @@ gulp.task('composer', function () {
 	composer({ cwd: './php-stuff', bin: 'composer' });
 });
 ```
+More involved example
+```js
+	var composer = require('gulp-composer');
+	composer('init', {'no-interaction':true});
+	composer('require "codeception/codeception:*"', {});
+	composer(); //default install
+	composer('dumpautoload', {optimize: true});
+```
 
 ### Options
 #### options.cwd
