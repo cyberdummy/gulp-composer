@@ -86,7 +86,7 @@ module.exports = function (cmd, opts) {
 	bin = opts.bin || (function(){
 			var self_install_cmd,
 				self_install_dir  = tempdir(),
-				self_install_file = 'composer.phar',
+				self_install_file = 'gulp-composer.phar',
 				self_install_path = self_install_dir + '/' + self_install_file,
 				self_install_options = build_arguments({
 					'install-dir': self_install_dir,
