@@ -39,7 +39,7 @@ if (!which('php')) {
 	stream.emit('error', new gutil.PluginError('gulp-composer', "PHP is a composer requirement and therefore it is required to use gulp-composer."));
 }
 module.exports = function (cmd, opts) {
-	var bin, commandToRun, cwd;
+	var bin, commandToRun, cwd, self_install = true;
 
 	if (typeof cmd === 'undefined' || typeof cmd === 'object') {
 		// Looks like this was called with either no parameters
@@ -52,6 +52,12 @@ module.exports = function (cmd, opts) {
 		opts = opts || {};
 	}
 
+	// optional self-install support
+	if (typeof opts['self-install'] !== 'undefined') {
+		self_install = !!opts['self-install'];
+		delete opts['self-install']; // avoid sending parameter to composer
+	}
+
 	// cwd legacy support
 	cwd = opts['working-dir'] || opts.d || opts.cwd || process.cwd();
 
@@ -59,7 +65,7 @@ module.exports = function (cmd, opts) {
 	// and allows us to remove an unneeded `gutil.log` line
 	opts['working-dir'] = cwd;
 
-	delete opts.cwd; // avoid sending cwd parameter
+	delete opts.cwd; // avoid sending parameter to composer
 	delete opts.d;   // avoid sending duplicate -d parameter
 
 	// To default to `true` for historical purposes, uncomment the following block
@@ -78,7 +84,7 @@ module.exports = function (cmd, opts) {
 	}
 
 	bin = opts.bin || (function(){
-			var self_install,
+			var self_install_cmd,
 				self_install_dir  = tempdir(),
 				self_install_file = 'composer.phar',
 				self_install_path = self_install_dir + '/' + self_install_file,
@@ -91,7 +97,7 @@ module.exports = function (cmd, opts) {
 				}),
 				self_install_alert = function () {
 					gutil.log();
-					gutil.log(gutil.colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
+						gutil.log(gutil.colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
 					gutil.log(gutil.colors.yellow.inverse(" Installation: ") + gutil.colors.yellow.underline.inverse("https://getcomposer.org/doc/00-intro.md") + gutil.colors.yellow.inverse("                     "));
 					gutil.log();
 				};
@@ -101,6 +107,7 @@ module.exports = function (cmd, opts) {
 				gutil.log(gutil.colors.green("Defaulting to locally installed " + cwd + "/composer.phar..."));
 				return cwd + '/composer.phar';
 			}
+			gutil.log(gutil.colors.yellow("Composer is not available locally."));
 
 			// Otherwise use composer if it's installed globally...
 			if (which('composer')) {
@@ -109,13 +116,19 @@ module.exports = function (cmd, opts) {
 			}
 			gutil.log(gutil.colors.yellow("Composer is not available globally."));
 
+			if (!self_install) {
+				gutil.log(gutil.colors.red.inverse("Failed to load composer and self-install has been disabled."));
+				gutil.log(gutil.colors.red.inverse("Installation instructions: ") + gutil.colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
+				return '';
+			}
+
 			if (test('-e', self_install_path)) {
 				gutil.log(gutil.colors.yellow("Loading composer from system temp directory..."));
 				self_install_alert();
 				return self_install_path;
 			}
 
-			gutil.log(gutil.colors.yellow("Composer is not available locally, either."));
+			gutil.log(gutil.colors.yellow("Composer is not available from the system temp, either."));
 
 			// It doesn't exist, so we'll attempt to download it locally and delete it afterward
 			if (self_install_options) {
@@ -123,12 +136,12 @@ module.exports = function (cmd, opts) {
 			}
 
 			gutil.log(gutil.colors.magenta.inverse(" Attempting to download composer to system temp directory...               "));
-			self_install = exec('php -r "readfile(\'https://getcomposer.org/installer\');" | php' + self_install_options, { async: false, silent: true });
+			self_install_cmd = exec('php -r "readfile(\'https://getcomposer.org/installer\');" | php' + self_install_options, { async: false, silent: true });
 
-			if (self_install.code != 0) {
-				stream.emit('error', new gutil.PluginError('gulp-composer', self_install.output));
+			if (self_install_cmd.code != 0) {
+				stream.emit('error', new gutil.PluginError('gulp-composer', self_install_cmd.output));
 			}
-			log_exec(self_install.output);
+			log_exec(self_install_cmd.output);
 
 			if (ls(self_install_path)[0]) {
 				gutil.log(gutil.colors.magenta.inverse(" Successfully downloaded!                                                  "));
@@ -144,7 +157,7 @@ module.exports = function (cmd, opts) {
 	delete opts.bin; // avoid sending bin parameter
 
 	if (!bin) {
-		stream.emit('error', new gutil.PluginError('gulp-composer', "Composer executable does not exist. Please install before continuing."));
+		stream.emit('error', new gutil.PluginError('gulp-composer', "Composer executable does not exist. " + ( self_install ? "Self-install was unsuccessful. Please install before continuing." : "Please install or enable the self-install option before continuing.") ));
 	}
 
 
