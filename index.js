@@ -83,6 +83,10 @@ module.exports = function (cmd, opts) {
 		}
 	}
 
+	if (opts.bin == 'auto') {
+		delete opts.bin;
+	}
+
 	bin = opts.bin || (function(){
 			var self_install_cmd,
 				self_install_dir  = tempdir(),
