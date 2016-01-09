@@ -97,6 +97,12 @@ if (gutils.env.production) {
 composer("dumpautoload", {optimize: true});
 ```
 
+## Contributors
+
++ Tom Westcott <tom.westcott@gmail.com>
++ Nathan J. Brauer <nathan@marketera.com>
++ Joseph Richardson <jrichardson@zingermans.com>
+
 [install-composer]: https://getcomposer.org/doc/00-intro.md
 [cwd]:              https://nodejs.org/api/process.html#process_process_cwd
 [options]:          #options
