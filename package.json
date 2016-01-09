@@ -1,6 +1,6 @@
 {
   "name": "gulp-composer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Install composer packages",
   "main": "index.js",
   "repository": {
@@ -8,14 +8,14 @@
     "url": "https://github.com/cyberdummy/gulp-composer.git"
   },
   "keywords": [
-      "gulpplugin",
-      "composer"
+    "gulpplugin",
+    "composer"
   ],
   "author": {
     "name": "Tom Westcott",
     "email": "tom.westcott@gmail.com"
   },
-  "license": "MIT", 
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/cyberdummy/gulp-composer/issues"
   },
