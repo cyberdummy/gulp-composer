@@ -36,10 +36,11 @@ composer([ command, ] [ options ]);
 
 | Option                                | Default | Description                                                                                         | Passed to composer |
 |:------------------------------------- |:------- |:--------------------------------------------------------------------------------------------------- |:------------------ |
-| working-dir  <br><sup>*String*</sup>  | [cwd]   | The path with which to run composer against (normally where the composer.json is located).          | *Yes*              |
 | bin          <br><sup>*String*</sup>  | auto    | Path to the composer binary. E.g. `composer`, `/usr/bin/composer.phar`, or `php /path/to/composer`. | *No*               |
-| self-install <br><sup>*Boolean*</sup> | true    | Set to `false` if you prefer to disable the self-install feature.                                   | *No*               |
-| ansi         <br><sup>*Boolean*</sup> | true    | The default for this parameter is automatically passed `composer` to enable logging in color        | *Yes*              |
+| self-install <br><sup>*Boolean*</sup> | true    | Set to `false` to disable self-install.                                                             | *No*               |
+| async        <br><sup>*Boolean*</sup> | true    | By default, the `composer` bin will load asynchronously. Use `false` to run it synchronously.       | *No*               |
+| ansi         <br><sup>*Boolean*</sup> | true    | The default for this parameter is automatically passed `composer` to enable logging in color.       | *Yes*              |
+| working-dir  <br><sup>*String*</sup>  | [cwd]   | The path with which to run composer against (normally where the composer.json is located).          | *Yes*              |
 | ...                                   | *mixed* | Any other arguments will be passed through to composer                                              | *Yes*              |
 
 
