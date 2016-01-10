@@ -1,6 +1,6 @@
 'use strict';
-var gutil 	= require('gulp-util'),
-	shelljs	= require('shelljs/global'),
+var gutil   = require('gulp-util'),
+	shelljs = require('shelljs/global'),
 	through = require('through2'),
 
 	stream = through.obj(function(file, enc, callback) {
@@ -39,7 +39,21 @@ if (!which('php')) {
 	stream.emit('error', new gutil.PluginError('gulp-composer', "PHP is a composer requirement and therefore it is required to use gulp-composer."));
 }
 module.exports = function (cmd, opts) {
-	var bin, commandToRun, cwd, self_install = true;
+	var commandToRun, execReturn,
+		self_install = true, async = true,
+		bin, cwd,
+		handle_exec = function(code, output) {
+			if (code != 0) {
+				stream.emit('error', new gutil.PluginError('gulp-composer', output));
+			}
+
+			log_exec(output);
+
+			gutil.log(gutil.colors.cyan.inverse(" Composer completed.                                                       "));
+
+			stream.end();
+			stream.emit("end");
+		};
 
 	if (typeof cmd === 'undefined' || typeof cmd === 'object') {
 		// Looks like this was called with either no parameters
@@ -58,6 +72,12 @@ module.exports = function (cmd, opts) {
 		delete opts['self-install']; // avoid sending parameter to composer
 	}
 
+	// optional async support
+	if (typeof opts['async'] !== 'undefined') {
+		async = !!opts['async'];
+		delete opts['async']; // avoid sending parameter to composer
+	}
+
 	// cwd legacy support
 	cwd = opts['working-dir'] || opts.d || opts.cwd || process.cwd();
 
@@ -67,11 +87,6 @@ module.exports = function (cmd, opts) {
 
 	delete opts.cwd; // avoid sending parameter to composer
 	delete opts.d;   // avoid sending duplicate -d parameter
-
-	// To default to `true` for historical purposes, uncomment the following block
-	//if (typeof opts.quiet == 'undefined') {
-	//	 opts.quiet = true;
-	//}
 
 	// Ensure opts.quiet is a bool
 	opts.quiet = !!opts.quiet;
@@ -101,7 +116,7 @@ module.exports = function (cmd, opts) {
 				}),
 				self_install_alert = function () {
 					gutil.log();
-						gutil.log(gutil.colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
+					gutil.log(gutil.colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
 					gutil.log(gutil.colors.yellow.inverse(" Installation: ") + gutil.colors.yellow.underline.inverse("https://getcomposer.org/doc/00-intro.md") + gutil.colors.yellow.inverse("                     "));
 					gutil.log();
 				};
@@ -171,18 +186,12 @@ module.exports = function (cmd, opts) {
 	gutil.log();
 	gutil.log(gutil.colors.cyan.inverse(" Executing composer...                                                     "));
 
-	exec(commandToRun, {silent:true}, function(code, output) {
-		if (code != 0) {
-			stream.emit('error', new gutil.PluginError('gulp-composer', output));
-		}
-
-		log_exec(output);
-
-		gutil.log(gutil.colors.cyan.inverse(" Composer completed.                                                       "));
-
-		stream.end();
-		stream.emit("end");
-	});
+	if (async) {
+		exec(commandToRun, { silent: true }, handle_exec);
+	} else {
+		execReturn = exec(commandToRun, { silent: true, async: false });
+		handle_exec(execReturn.code,execReturn.output);
+	}
 
 	return stream;
 };
