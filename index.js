@@ -191,7 +191,7 @@ module.exports = function (cmd, opts) {
     // build the command array
     commandToRun = [bin, cmd, build_arguments(opts)].join(' ');
     gutil.log(gutil.colors.red(commandToRun));
-    gutil.log();
+    gutil.log('');
     gutil.log(gutil.colors.cyan.inverse(" Executing composer...                                                     "));
 
     if (async) {
