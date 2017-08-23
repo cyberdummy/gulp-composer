@@ -29,9 +29,9 @@ var build_arguments = function (opts) {
     },
     log_indent = '|   ',
     log_exec = function (output) {
-        var output_lines = output.replace(/^\s+|\s+$/, '').split(/[\n\r]+/), // Trims the output and returns it split into an array of lines
-            log_line;
+        var output_lines, log_line;
         if (output) {
+            output_lines =  = output.replace(/^\s+|\s+$/, '').split(/[\n\r]+/); // Trims the output and returns it split into an array of lines
             for (log_line = 0; log_line < output_lines.length; log_line += 1) {
                 gutil.log(log_indent, output_lines[log_line]);
             }
