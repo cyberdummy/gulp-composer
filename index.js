@@ -203,6 +203,7 @@ module.exports = function (cmd, opts) {
             silent: true,
             async: false
         });
+        if(typeof execReturn.output === 'undefined') execReturn.output = execReturn.stderr;
         handle_exec(execReturn.code, execReturn.output);
     }
 
