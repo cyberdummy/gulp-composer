@@ -187,6 +187,10 @@ module.exports = function (cmd, opts) {
         stream.emit('error', new gutil.PluginError('gulp-composer', "Composer executable does not exist. " + (self_install ? "Self-install was unsuccessful. Please install before continuing." : "Please install or enable the self-install option before continuing.")));
     }
 
+	// fix self install command
+	if(self_install) {
+        bin = 'php ' + bin;
+    }
 
     // build the command array
     commandToRun = [bin, cmd, build_arguments(opts)].join(' ');
