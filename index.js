@@ -136,6 +136,7 @@ module.exports = function (cmd, opts) {
         // Otherwise use composer if it's installed globally...
         if (which('composer')) {
             gutil.log(gutil.colors.green("Defaulting to globally installed composer..."));
+			self_install = false;
             return 'composer';
         }
         gutil.log(gutil.colors.yellow("Composer is not available globally."));
