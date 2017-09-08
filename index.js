@@ -84,7 +84,7 @@ module.exports = function (cmd, opts) {
     }
 
     // cwd legacy support
-    cwd = "\"" + opts['working-dir'] || opts.d || opts.cwd || process.cwd() + "\"";
+    cwd = "\"" + (opts['working-dir'] || opts.d || opts.cwd || process.cwd()) + "\"";
 
     // using --working-dir=xxxx instead of -d makes logging clearer
     // and allows us to remove an unneeded `gutil.log` line
