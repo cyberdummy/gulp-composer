@@ -84,7 +84,7 @@ module.exports = function (cmd, opts) {
     }
 
     // cwd legacy support
-    cwd = opts['working-dir'] || opts.d || opts.cwd || process.cwd();
+    cwd = "\"" + (opts['working-dir'] || opts.d || opts.cwd || process.cwd()) + "\"";
 
     // using --working-dir=xxxx instead of -d makes logging clearer
     // and allows us to remove an unneeded `gutil.log` line
@@ -136,6 +136,7 @@ module.exports = function (cmd, opts) {
         // Otherwise use composer if it's installed globally...
         if (which('composer')) {
             gutil.log(gutil.colors.green("Defaulting to globally installed composer..."));
+			self_install = false;
             return 'composer';
         }
         gutil.log(gutil.colors.yellow("Composer is not available globally."));
@@ -187,6 +188,10 @@ module.exports = function (cmd, opts) {
         stream.emit('error', new gutil.PluginError('gulp-composer', "Composer executable does not exist. " + (self_install ? "Self-install was unsuccessful. Please install before continuing." : "Please install or enable the self-install option before continuing.")));
     }
 
+	// fix self install command
+	if(self_install) {
+        bin = 'php ' + bin;
+    }
 
     // build the command array
     commandToRun = [bin, cmd, build_arguments(opts)].join(' ');
