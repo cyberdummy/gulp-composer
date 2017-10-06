@@ -107,6 +107,11 @@ module.exports = function (cmd, opts) {
         delete opts.bin;
     }
 
+    // if supplied a custom binary make sure self install is off
+    if (opts.bin) {
+      self_install = false;
+    }
+
     bin = opts.bin || (function () {
         var self_install_cmd,
             self_install_dir = tempdir(),
