@@ -2,7 +2,9 @@
 /*jslint node: true */
 /*jslint unparam: true */
 /*global which, gulp, tempdir, test, exec, ls */
-var gutil = require('gulp-util'),
+var log = require('fancy-log'),
+    PluginError = require('plugin-error'),
+    colors = require('ansi-colors'),
     shelljs = require('shelljs/global'),
     through = require('through2'),
 
@@ -33,14 +35,14 @@ var build_arguments = function (opts) {
         if (output) {
             output_lines = output.replace(/^\s+|\s+$/, '').split(/[\n\r]+/); // Trims the output and returns it split into an array of lines
             for (log_line = 0; log_line < output_lines.length; log_line += 1) {
-                gutil.log(log_indent, output_lines[log_line]);
+                log(log_indent, output_lines[log_line]);
             }
         }
     };
 /*jslint unparam: false*/
 
 if (!which('php')) {
-    stream.emit('error', new gutil.PluginError('gulp-composer', "PHP is a composer requirement and therefore it is required to use gulp-composer."));
+    stream.emit('error', new PluginError('gulp-composer', "PHP is a composer requirement and therefore it is required to use gulp-composer."));
 }
 module.exports = function (cmd, opts) {
     var commandToRun, execReturn,
@@ -49,12 +51,12 @@ module.exports = function (cmd, opts) {
         bin, cwd,
         handle_exec = function (code, output) {
             if (code !== 0) {
-                stream.emit('error', new gutil.PluginError('gulp-composer', output));
+                stream.emit('error', new PluginError('gulp-composer', output));
             }
 
             log_exec(output);
 
-            gutil.log(gutil.colors.cyan.inverse(" Composer completed.                                                       "));
+            log(colors.cyan.inverse(" Composer completed.                                                       "));
 
             stream.end();
             stream.emit("end");
@@ -87,7 +89,7 @@ module.exports = function (cmd, opts) {
     cwd = "\"" + (opts['working-dir'] || opts.d || opts.cwd || process.cwd()) + "\"";
 
     // using --working-dir=xxxx instead of -d makes logging clearer
-    // and allows us to remove an unneeded `gutil.log` line
+    // and allows us to remove an unneeded `log` line
     opts['working-dir'] = cwd;
 
     delete opts.cwd; // avoid sending parameter to composer
@@ -125,72 +127,72 @@ module.exports = function (cmd, opts) {
                 'no-ansi': !opts.ansi
             }),
             self_install_alert = function () {
-                gutil.log();
-                gutil.log(gutil.colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
-                gutil.log(gutil.colors.yellow.inverse(" Installation: ") + gutil.colors.yellow.underline.inverse("https://getcomposer.org/doc/00-intro.md") + gutil.colors.yellow.inverse("                     "));
-                gutil.log();
+                log();
+                log(colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
+                log(colors.yellow.inverse(" Installation: ") + colors.yellow.underline.inverse("https://getcomposer.org/doc/00-intro.md") + colors.yellow.inverse("                     "));
+                log();
             };
 
         // Use composer.phar if it exists locally...
         if (test('-e', cwd + '/composer.phar')) {
-            gutil.log(gutil.colors.green("Defaulting to locally installed " + cwd + "/composer.phar..."));
+            log(colors.green("Defaulting to locally installed " + cwd + "/composer.phar..."));
             return cwd + '/composer.phar';
         }
-        gutil.log(gutil.colors.yellow("Composer is not available locally."));
+        log(colors.yellow("Composer is not available locally."));
 
         // Otherwise use composer if it's installed globally...
         if (which('composer')) {
-            gutil.log(gutil.colors.green("Defaulting to globally installed composer..."));
+            log(colors.green("Defaulting to globally installed composer..."));
 			self_install = false;
             return 'composer';
         }
-        gutil.log(gutil.colors.yellow("Composer is not available globally."));
+        log(colors.yellow("Composer is not available globally."));
 
         if (!self_install) {
-            gutil.log(gutil.colors.red.inverse("Failed to load composer and self-install has been disabled."));
-            gutil.log(gutil.colors.red.inverse("Installation instructions: ") + gutil.colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
+            log(colors.red.inverse("Failed to load composer and self-install has been disabled."));
+            log(colors.red.inverse("Installation instructions: ") + colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
             return '';
         }
 
         if (test('-e', self_install_path)) {
-            gutil.log(gutil.colors.yellow("Loading composer from system temp directory..."));
+            log(colors.yellow("Loading composer from system temp directory..."));
             self_install_alert();
             return self_install_path;
         }
 
-        gutil.log(gutil.colors.yellow("Composer is not available from the system temp, either."));
+        log(colors.yellow("Composer is not available from the system temp, either."));
 
         // It doesn't exist, so we'll attempt to download it locally and delete it afterward
         if (self_install_options) {
             self_install_options = ' -- ' + self_install_options;
         }
 
-        gutil.log(gutil.colors.magenta.inverse(" Attempting to download composer to system temp directory...               "));
+        log(colors.magenta.inverse(" Attempting to download composer to system temp directory...               "));
         self_install_cmd = exec('php -r "readfile(\'https://getcomposer.org/installer\');" | php' + self_install_options, {
             async: false,
             silent: true
         });
 
         if (self_install_cmd.code !== 0) {
-            stream.emit('error', new gutil.PluginError('gulp-composer', self_install_cmd.output));
+            stream.emit('error', new PluginError('gulp-composer', self_install_cmd.output));
         }
         log_exec(self_install_cmd.output);
 
         if (ls(self_install_path)[0]) {
-            gutil.log(gutil.colors.magenta.inverse(" Successfully downloaded!                                                  "));
+            log(colors.magenta.inverse(" Successfully downloaded!                                                  "));
             self_install_alert();
             return self_install_path;
         }
 
-        gutil.log(gutil.colors.red.inverse("Failed to download. All options have been exhausted."));
-        gutil.log(gutil.colors.red.inverse("Installation instructions: ") + gutil.colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
+        log(colors.red.inverse("Failed to download. All options have been exhausted."));
+        log(colors.red.inverse("Installation instructions: ") + colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
 
         return '';
     }());
     delete opts.bin; // avoid sending bin parameter
 
     if (!bin) {
-        stream.emit('error', new gutil.PluginError('gulp-composer', "Composer executable does not exist. " + (self_install ? "Self-install was unsuccessful. Please install before continuing." : "Please install or enable the self-install option before continuing.")));
+        stream.emit('error', new PluginError('gulp-composer', "Composer executable does not exist. " + (self_install ? "Self-install was unsuccessful. Please install before continuing." : "Please install or enable the self-install option before continuing.")));
     }
 
 	// fix self install command
@@ -200,9 +202,9 @@ module.exports = function (cmd, opts) {
 
     // build the command array
     commandToRun = [bin, cmd, build_arguments(opts)].join(' ');
-    gutil.log(gutil.colors.red(commandToRun));
-    gutil.log();
-    gutil.log(gutil.colors.cyan.inverse(" Executing composer...                                                     "));
+    log(colors.red(commandToRun));
+    log();
+    log(colors.cyan.inverse(" Executing composer...                                                     "));
 
     if (async) {
         exec(commandToRun, {
