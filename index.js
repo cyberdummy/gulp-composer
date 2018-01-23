@@ -56,7 +56,7 @@ module.exports = function (cmd, opts) {
 
             log_exec(output);
 
-            log(colors.cyan.inverse(" Composer completed.                                                       "));
+            log(colors.inverse(colors.cyan(" Composer completed.                                                       ")));
 
             stream.end();
             stream.emit("end");
@@ -128,8 +128,8 @@ module.exports = function (cmd, opts) {
             }),
             self_install_alert = function () {
                 log();
-                log(colors.yellow.inverse(" Significantly improve performance by installing composer on this machine. "));
-                log(colors.yellow.inverse(" Installation: ") + colors.yellow.underline.inverse("https://getcomposer.org/doc/00-intro.md") + colors.yellow.inverse("                     "));
+                log(colors.inverse(colors.yellow(" Significantly improve performance by installing composer on this machine. ")));
+                log(colors.inverse(colors.yellow(" Installation: ")) + colors.inverse(colors.underline(colors.yellow("https://getcomposer.org/doc/00-intro.md"))) + colors.inverse(colors.yellow("                     ")));
                 log();
             };
 
@@ -149,8 +149,8 @@ module.exports = function (cmd, opts) {
         log(colors.yellow("Composer is not available globally."));
 
         if (!self_install) {
-            log(colors.red.inverse("Failed to load composer and self-install has been disabled."));
-            log(colors.red.inverse("Installation instructions: ") + colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
+            log(colors.inverse(colors.red("Failed to load composer and self-install has been disabled.")));
+            log(colors.inverse(colors.red("Installation instructions: ")) + colors.inverse(colors.underline(colors.blue("https://getcomposer.org/doc/00-intro.md"))));
             return '';
         }
 
@@ -167,7 +167,7 @@ module.exports = function (cmd, opts) {
             self_install_options = ' -- ' + self_install_options;
         }
 
-        log(colors.magenta.inverse(" Attempting to download composer to system temp directory...               "));
+        log(colors.inverse(colors.magenta(" Attempting to download composer to system temp directory...               ")));
         self_install_cmd = exec('php -r "readfile(\'https://getcomposer.org/installer\');" | php' + self_install_options, {
             async: false,
             silent: true
@@ -179,13 +179,13 @@ module.exports = function (cmd, opts) {
         log_exec(self_install_cmd.output);
 
         if (ls(self_install_path)[0]) {
-            log(colors.magenta.inverse(" Successfully downloaded!                                                  "));
+            log(colors.inverse(colors.magenta(" Successfully downloaded!                                                  ")));
             self_install_alert();
             return self_install_path;
         }
 
-        log(colors.red.inverse("Failed to download. All options have been exhausted."));
-        log(colors.red.inverse("Installation instructions: ") + colors.blue.underline.inverse("https://getcomposer.org/doc/00-intro.md"));
+        log(colors.inverse(colors.red("Failed to download. All options have been exhausted.")));
+        log(colors.inverse(colors.red("Installation instructions: ")) + colors.inverse(colors.underline(colors.blue("https://getcomposer.org/doc/00-intro.md"))));
 
         return '';
     }());
@@ -204,7 +204,7 @@ module.exports = function (cmd, opts) {
     commandToRun = [bin, cmd, build_arguments(opts)].join(' ');
     log(colors.red(commandToRun));
     log();
-    log(colors.cyan.inverse(" Executing composer...                                                     "));
+    log(colors.inverse(colors.cyan(" Executing composer...                                                     ")));
 
     if (async) {
         exec(commandToRun, {
